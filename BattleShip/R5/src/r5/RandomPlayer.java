@@ -44,8 +44,9 @@ public class RandomPlayer implements BattleshipsPlayer
     private int sizeY;
     private Board myBoard;
     int[][] preBoard = new int[10][10];
-
-
+    int enemyShips;
+    boolean searching;
+    int maxEnemyShipSize;
    
     public RandomPlayer()
     {
@@ -183,6 +184,17 @@ public class RandomPlayer implements BattleshipsPlayer
         //Do nothing
     }
     
+    public void maxEnemyShipSize(Fleet fleet)
+    {
+        for(int i = 0; i < fleet.getNumberOfShips(); i++)
+        {
+            if(fleet.getShip(i).size()> maxEnemyShipSize)
+            {
+                maxEnemyShipSize=fleet.getShip(i).size();
+            }
+        }
+    }
+    
     public void showPreBoard()
     {
         for (int i = 9; i > -1; i--) 
@@ -194,6 +206,7 @@ public class RandomPlayer implements BattleshipsPlayer
             System.out.println("");
         }
     }
+    
     
         public void showPriorityBoard()
     {
@@ -493,10 +506,19 @@ public class RandomPlayer implements BattleshipsPlayer
      * @param hit boolean is true if your last shot hit a ship. False otherwise.
      * @param enemyShips Fleet the enemy's ships.
      */
+    
+    
+    
     @Override
     public void hitFeedBack(boolean hit, Fleet enemyShips)
     { 
-      
+        
+        if(enemyShips.getNumberOfShips()< this.enemyShips)
+        {
+            this.enemyShips=enemyShips.getNumberOfShips();
+            maxEnemyShipSize(enemyShips);
+        }
+        
         if( hit && !huntMode && !destroyMode)
         {     
             bulletHit = true;
@@ -595,9 +617,38 @@ public class RandomPlayer implements BattleshipsPlayer
     public void startRound(int round)
     {
         //Do nothing
+        
+        resetFireCoord(fireCoord);
+        initPreBoard(preBoard);
+        enemyShips=5;
+        clearPriority();
+        
     }
 
+    public int[][] resetFireCoord(int[][] fireCoord)
+    {
+        for (int i = 0; i < 10; i++) 
+        {
+            for (int j = 0; j < 10; j++) 
+            {
+                fireCoord[i][j]=0;
+            }
     
+        }
+        return fireCoord;
+    }
+    public int[][] initPreBoard(int[][] preBoard)
+    {
+        for (int i = 0; i < 10; i++) 
+        {
+            for (int j = 0; j < 10; j++) 
+            {
+                preBoard[i][j]=0;
+            }
+    
+        }
+        return preBoard;
+    }
     /**
      * Called at the end of each round to let you know if you won or lost.
      * Compare your points with the enemy's to see who won.
