@@ -241,7 +241,7 @@ public class RandomPlayer implements BattleshipsPlayer
     public Position getFireCoordinates(Fleet enemyShips)
     {
         
-
+        setPriority();
         
         // Let's try shooting at the four squares around our hitmark
         if( huntMode )
@@ -350,17 +350,16 @@ public class RandomPlayer implements BattleshipsPlayer
         if( !huntMode && !destroyMode )
         { 
            System.out.println("Search");
-            setPriority();
+            
                  showPriorityBoard();
 
                     setFireCoordinates();
                     fireCoord[fireX][fireY] = 1;    
 
-            clearPriority();
         }
             
          
-         
+          clearPriority();
         
          System.out.println( "Shooting at coords:" + " x " + fireX  +  " y " + fireY );
         return new Position(fireX,fireY);
@@ -443,6 +442,7 @@ public class RandomPlayer implements BattleshipsPlayer
                         {
                            priorityBoard[k][i] = 0;
                            setPriority = false;
+                           break;
                         }
 
                     }
@@ -472,6 +472,7 @@ public class RandomPlayer implements BattleshipsPlayer
                         {
                            priorityBoard[j][k] = 0;
                            setPriority = false;
+                           break;
                         }
 
                     }
@@ -515,6 +516,13 @@ public class RandomPlayer implements BattleshipsPlayer
         
         if(enemyShips.getNumberOfShips()< this.enemyShips)
         {
+            if( destroyMode )
+            {  
+                destroyMode = false;
+            }
+            if( huntMode )
+                huntMode = false;
+      
             this.enemyShips=enemyShips.getNumberOfShips();
             maxEnemyShipSize(enemyShips);
         }
