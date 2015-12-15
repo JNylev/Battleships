@@ -12,6 +12,7 @@ import battleship.interfaces.Ship;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import org.omg.CORBA.INTERNAL;
 
 /**
  *
@@ -27,6 +28,7 @@ public class RandomPlayer implements BattleshipsPlayer
     private static int tempX;
     private static int tempY;
     private static int hunting = 0; // from 1-4
+    private static int hitcount = 0;
     private static boolean bulletHit;
     private static boolean huntMode = false;
     private static boolean destroyMode = false;
@@ -46,7 +48,7 @@ public class RandomPlayer implements BattleshipsPlayer
     int[][] preBoard = new int[10][10];
     int enemyShips;
     boolean searching;
-    int maxEnemyShipSize;
+    int maxEnemyShipSize = 5;
    
     public RandomPlayer()
     {
@@ -73,7 +75,6 @@ public class RandomPlayer implements BattleshipsPlayer
     public void placeShips(Fleet fleet, Board board)
     {
        
-        
         //preBoard =initPreBoard(preBoard);
         myBoard = board;
         sizeX = board.sizeX();
@@ -186,12 +187,18 @@ public class RandomPlayer implements BattleshipsPlayer
     
     public void maxEnemyShipSize(Fleet fleet)
     {
+        maxEnemyShipSize = 0;
         for(int i = 0; i < fleet.getNumberOfShips(); i++)
         {
-            if(fleet.getShip(i).size()> maxEnemyShipSize)
+            
+         System.out.println("fleet size" + fleet.getShip(i).size() );
+         
+            if( fleet.getShip(i).size() > maxEnemyShipSize )
             {
-                maxEnemyShipSize=fleet.getShip(i).size();
+                
+                maxEnemyShipSize = fleet.getShip(i).size();
             }
+            System.out.println("maxshipssizevar" + maxEnemyShipSize );
         }
     }
     
@@ -419,78 +426,80 @@ public class RandomPlayer implements BattleshipsPlayer
     
     int v = 0;
     int s = 0;
-
+    System.out.println("eSize" + maxEnemyShipSize );
         for( int i = 9; i >= 0 ; i--) // y
         {
 
             for (int j = 0; j < 10; j++) // x
             {
-
-            for( s = 2; s < 6; s++) // <- need something better than this. Gotta know which ships there are.
-            {
-                if( (j + s) <= 10 ) // Keeps us in bounds on array
+                
+                
+                for( s = 2; s <= maxEnemyShipSize; s++)
                 {
-                
-                    for( int k = j; k < (j + s); k++ )
+
+                    if( (j + s) <= 10 ) // Keeps us in bounds on array
                     {
 
-                        if( fireCoord[k][i] != 1 )
+                        for( int k = j; k < (j + s); k++ )
                         {
-                           setPriority = true;
+
+                            if( fireCoord[k][i] != 1 )
+                            {
+                               setPriority = true;
+                            }
+                            else
+                            {
+                               priorityBoard[k][i] = 0;
+                               setPriority = false;
+                               break;
+                            }
+
                         }
-                        else
+
+
+                        if( setPriority )
                         {
-                           priorityBoard[k][i] = 0;
-                           setPriority = false;
-                           break;
+                            for (int k = j; k < (j + s); k++) 
+                            {
+
+                               priorityBoard[k][i]++;
+
+                            }
+                        }
+                    }
+
+                    if( (i + s) <= 10 ) // Keeps us in bounds on array
+                    {
+                        for( int k = i; k < (i + s); k++ )
+                        {
+
+                            if( fireCoord[j][k] != 1 )
+                            {
+                               setPriority = true;
+                            }
+                            else
+                            {
+                               priorityBoard[j][k] = 0;
+                               setPriority = false;
+                               break;
+                            }
+
+                        }
+
+
+                        if( setPriority  )
+                        {
+                            for (int k = i; k < (i + s); k++) 
+                            {
+
+                               priorityBoard[j][k]++;
+
+                            }
                         }
 
                     }
 
-
-                    if( setPriority )
-                    {
-                        for (int k = j; k < (j + s); k++) 
-                        {
-
-                           priorityBoard[k][i]++;
-                         
-                        }
-                    }
                 }
-                
-                if( (i + s) <= 10 ) // Keeps us in bounds on array
-                {
-                    for( int k = i; k < (i + s); k++ )
-                    {
-
-                        if( fireCoord[j][k] != 1 )
-                        {
-                           setPriority = true;
-                        }
-                        else
-                        {
-                           priorityBoard[j][k] = 0;
-                           setPriority = false;
-                           break;
-                        }
-
-                    }
-
-
-                    if( setPriority  )
-                    {
-                        for (int k = i; k < (i + s); k++) 
-                        {
-
-                           priorityBoard[j][k]++;
-                         
-                        }
-                    }
-                    
-                }
-                
-               }
 
             }
 
@@ -513,9 +522,14 @@ public class RandomPlayer implements BattleshipsPlayer
     @Override
     public void hitFeedBack(boolean hit, Fleet enemyShips)
     { 
+        if( hit )
+        {
+            hitcount++;
+        }
         
         if(enemyShips.getNumberOfShips()< this.enemyShips)
         {
+            
             if( destroyMode )
             {  
                 destroyMode = false;
@@ -523,8 +537,11 @@ public class RandomPlayer implements BattleshipsPlayer
             if( huntMode )
                 huntMode = false;
       
+            hitcount = 0;
             this.enemyShips=enemyShips.getNumberOfShips();
+           
             maxEnemyShipSize(enemyShips);
+
         }
         
         if( hit && !huntMode && !destroyMode)
@@ -630,6 +647,7 @@ public class RandomPlayer implements BattleshipsPlayer
         initPreBoard(preBoard);
         enemyShips=5;
         clearPriority();
+        
         
     }
 
