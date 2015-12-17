@@ -442,75 +442,139 @@ public class RandomPlayer implements BattleshipsPlayer
             for (int j = 0; j < 10; j++) // x
             {
                 
-                    
-                for(int e = 0; e < enemyShipCount ; e++)
+                if(fireCoord[j][i] != 1) 
                 {
-                    s = ourEnemyFleet.getShip(e).size();
-
-                    if( (j + s) <= 10 ) // Keeps us in bounds on array
+                    for(int e = 0; e < enemyShipCount ; e++)
                     {
-
-                        for( int k = j; k < (j + s); k++ )
+                        s = ourEnemyFleet.getShip(e).size();
+                        
+                        if( (j + s) <= 10 ) // Keeps us in bounds on array
                         {
 
-                            if( fireCoord[k][i] != 1 )
+                            for( int k = j+1; k < (j + s); k++ )
                             {
-                               setPriority = true;
+
+                                if( fireCoord[k][i] != 1 )
+                                {
+                                   setPriority = true;
+                                }
+                                else
+                                {
+                                   //priorityBoard[k][i] = 0;
+                                   setPriority = false;
+                                   break;
+                                }
+                                if( setPriority )
+                                {
+                                    //for (int k = j; k < (j + s); k++) 
+                                    //{
+
+                                       priorityBoard[j][i]++;
+
+                                    //}
+                                }
+
                             }
-                            else
+
+
+                           
+                        }
+                        if(j-s >= -1)
+                        {
+                             for( int k = j-1; k > (j - s); k-- )
                             {
-                               priorityBoard[k][i] = 0;
-                               setPriority = false;
-                               break;
+
+                                if( fireCoord[k][i] != 1 )
+                                {
+                                   setPriority = true;
+                                }
+                                else
+                                {
+                                   //priorityBoard[k][i] = 0;
+                                   setPriority = false;
+                                   break;
+                                }
+
+                                if( setPriority )
+                                {
+                                   // for (int k = j; k < (j + s); k++) 
+                                  //  {
+
+                                       priorityBoard[j][i]++;
+
+                                   //    }
+                                }
                             }
+
 
                         }
 
-
-                        if( setPriority )
+                        if( (i + s) <= 10 ) // Keeps us in bounds on array
                         {
-                            for (int k = j; k < (j + s); k++) 
+                            for( int k = i+1; k < (i + s); k++ )
                             {
 
-                               priorityBoard[k][i]++;
+                                if( fireCoord[j][k] != 1 )
+                                {
+                                   setPriority = true;
+                                }
+                                else
+                                {
+                                   //priorityBoard[j][k] = 0;
+                                   setPriority = false;
+                                   break;
+                                }
 
+                                if( setPriority  )
+                                {
+                                    //for (int k = i; k < (i + s); k++) 
+                                    //{
+
+                                       priorityBoard[j][i]++;
+
+                                    //}
+                                }
                             }
+
+
+
+                        }
+                        if( (i - s) >= -1 ) // Keeps us in bounds on array
+                        {
+                            for( int k = i-1; k > (i - s); k-- )
+                            {
+
+                                if( fireCoord[j][k] != 1 )
+                                {
+                                   setPriority = true;
+                                }
+                                else
+                                {
+                                   //priorityBoard[j][k] = 0;
+                                   setPriority = false;
+                                   break;
+                                }
+
+                                if( setPriority  )
+                                {
+                                   // for (int k = i; k < (i + s); k++) 
+                                    //{
+
+                                       priorityBoard[j][i]++;
+
+                                    //}
+                                }
+                            }
+
+
+
                         }
                     }
-
-                    if( (i + s) <= 10 ) // Keeps us in bounds on array
-                    {
-                        for( int k = i; k < (i + s); k++ )
-                        {
-
-                            if( fireCoord[j][k] != 1 )
-                            {
-                               setPriority = true;
-                            }
-                            else
-                            {
-                               priorityBoard[j][k] = 0;
-                               setPriority = false;
-                               break;
-                            }
-
-                        }
-
-
-                        if( setPriority  )
-                        {
-                            for (int k = i; k < (i + s); k++) 
-                            {
-
-                               priorityBoard[j][k]++;
-
-                            }
-                        }
-
-                    }
-
                 }
-
+                else
+                {
+                priorityBoard[j][i] = 0;
+                }
             }
 
         }
