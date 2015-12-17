@@ -404,6 +404,33 @@ public class RandomPlayer implements BattleshipsPlayer
            
 
          }
+        if(max==0)
+        {
+            boolean breaker = false;
+            for ( i = 9; i > -1; i--) 
+            { 
+
+                for ( j = 0; j < 10; j++ )
+                { 
+
+                    if ( fireCoord[j][i] !=1 )
+                    { 
+                        fireX = j;
+                        fireY = i;
+                        breaker=true;
+                        break;
+                        
+                    }
+
+                }
+                if(breaker)
+                {
+                    break;
+                }
+
+
+            }
+        }
 
         System.out.println( "max value: "+ max + " At coords:" + " x " + fireX  +  " y " + fireY );
         
