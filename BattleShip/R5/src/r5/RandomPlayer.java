@@ -49,7 +49,8 @@ public class RandomPlayer implements BattleshipsPlayer
     int enemyShips;
     boolean searching;
     int maxEnemyShipSize = 5;
-   
+    int enemyShipCount = 4; // 0-4
+    public Fleet ourEnemyFleet;
     public RandomPlayer()
     {
     }
@@ -191,14 +192,17 @@ public class RandomPlayer implements BattleshipsPlayer
         for(int i = 0; i < fleet.getNumberOfShips(); i++)
         {
             
-         System.out.println("fleet size" + fleet.getShip(i).size() );
+        // System.out.println("fleet size" + fleet.getShip(i).size() );
          
             if( fleet.getShip(i).size() > maxEnemyShipSize )
             {   
                 maxEnemyShipSize = fleet.getShip(i).size();
             }
-            System.out.println("maxshipssizevar" + maxEnemyShipSize );
+          //  System.out.println("maxshipssizevar" + maxEnemyShipSize );   
         }
+
+        ourEnemyFleet = fleet;
+        
     }
     
     public void showPreBoard()
@@ -211,6 +215,7 @@ public class RandomPlayer implements BattleshipsPlayer
             }
             System.out.println("");
         }
+      
     }
     
     
@@ -246,7 +251,7 @@ public class RandomPlayer implements BattleshipsPlayer
     @Override
     public Position getFireCoordinates(Fleet enemyShips)
     {
-        
+        ourEnemyFleet = enemyShips;
         setPriority();
         
         // Let's try shooting at the four squares around our hitmark
@@ -418,23 +423,29 @@ public class RandomPlayer implements BattleshipsPlayer
                 
     }
   
+  
     public void setPriority()
     {
         
     boolean setPriority = false;
     
-    int v = 0;
+    int eN = 0;
     int s = 0;
+    enemyShipCount = 0;
+    enemyShipCount = ourEnemyFleet.getNumberOfShips();
+        System.out.println("eFleet " + enemyShipCount);
 
+    
         for( int i = 9; i >= 0 ; i--) // y
         {
 
             for (int j = 0; j < 10; j++) // x
             {
                 
-                
-                for( s = 2; s <= maxEnemyShipSize; s++)
+                    
+                for(int e = 0; e < enemyShipCount ; e++)
                 {
+                    s = ourEnemyFleet.getShip(e).size();
 
                     if( (j + s) <= 10 ) // Keeps us in bounds on array
                     {
@@ -521,6 +532,8 @@ public class RandomPlayer implements BattleshipsPlayer
     @Override
     public void hitFeedBack(boolean hit, Fleet enemyShips)
     { 
+        
+
         if( hit )
         {
             hitcount++;
@@ -532,8 +545,8 @@ public class RandomPlayer implements BattleshipsPlayer
             if( destroyMode )
             {  
                 destroyMode = false;
-                path = 0;
-                
+                huntMode = false;
+                path = 0;     
             }
 
             hitcount = 0;
@@ -553,35 +566,37 @@ public class RandomPlayer implements BattleshipsPlayer
             tempY = fireY;
             
             System.out.println("Ship hit: " + hit );
-            System.out.println("Enemy ships: " + enemyShips.getNumberOfShips() );    
         }
         else if( hit && huntMode )
         {
             
             if( hunting == 1 )
             {
+                enemyOnY = false;
                 enemyOnX = true;
                 path = 1;
             }
                 else if ( hunting == 2 )
                 {
+                    enemyOnY = false;
                     enemyOnX = true;
                     path = -1;   
                 }
                     else if ( hunting == 3 )
                     {
+                        enemyOnX = false;
                         enemyOnY = true;
                         path = 1;
                     }
                         else if ( hunting == 4 )
                         {
+                            enemyOnX = false;
                             enemyOnY = true;
                             path = -1;   
                         }
             
             bulletHit = true;
             System.out.println("Ship hit: " + hit );
-            System.out.println("Enemy ships: " + enemyShips.getNumberOfShips() );  
 
    
             huntMode = false;
@@ -595,7 +610,7 @@ public class RandomPlayer implements BattleshipsPlayer
             System.out.println("Missed shot");
         }
         
-        if( hit && destroyMode )
+        else if( hit && destroyMode )
         {
             continueKillPath = true;
         }
