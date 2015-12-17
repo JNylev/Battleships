@@ -251,127 +251,148 @@ public class RandomPlayer implements BattleshipsPlayer
     @Override
     public Position getFireCoordinates(Fleet enemyShips)
     {
-        ourEnemyFleet = enemyShips;
-        setPriority();
-        
-        // Let's try shooting at the four squares around our hitmark
-        if( huntMode )
-        {
-            System.out.println("Hunting");
-            if( tempX + 1 < 10 && fireCoord[tempX+1][tempY] == 0 )
-            {
-                
-                fireCoord[tempX+1][tempY] = 1;
-                fireX = tempX + 1;
-                fireY = tempY;
-                hunting = 1;
+        boolean tries = false;
+        boolean shoot = true;
+        while(shoot){
+            ourEnemyFleet = enemyShips;
+            setPriority();
 
-            }
-            else if( tempX - 1 >= 0 && fireCoord[tempX-1][tempY] == 0 )
+            // Let's try shooting at the four squares around our hitmark
+            if( huntMode )
             {
-                
-                fireCoord[tempX-1][tempY] = 1;
-                fireX = tempX - 1;
-                fireY = tempY;
-                hunting = 2;
-
-            }
-            else if( tempY + 1 < 10 && fireCoord[tempX][tempY+1] == 0 )
-            {
-                
-                fireCoord[tempX][tempY+1] = 1;
-                fireX = tempX;
-                fireY = tempY + 1;
-                hunting = 3;
-
-            }
-            else if( tempY - 1 > 0 && fireCoord[tempX][tempY-1] == 0 )
-            {
-                
-                fireCoord[tempX][tempY-1] = 1;
-                fireX = tempX;
-                fireY = tempY - 1; 
-                hunting = 4;
-
-            }
-            else 
-                huntMode = false;
-           
-        }    
-        
-        if( destroyMode )
-        {
-            System.out.println("Destroy");
-            System.out.println(enemyOnX);
-            System.out.println(enemyOnY);
-            System.out.println("path: " + path);
-            
-           if( enemyOnX && fireCoord[fireX + path][fireY] != 1 && fireX + path < 10 && fireX + path >= 0 )
-           {
-              System.out.println("Destroy x : " + path );
-              fireX += path; 
-              fireCoord[fireX][fireY] = 1;
-           }
-           else if( enemyOnX && fireCoord[fireX + path][fireY] == 1 )
-           {
-                fireX = tempX;
-                if ( fireCoord[fireX - path][fireY] != 1 )
+                System.out.println("Hunting");
+                if( tempX + 1 < 10 && fireCoord[tempX+1][tempY] == 0 )
                 {
-                  fireX -= path;
-                  System.out.println("Destroy x2 : " + path );
-                  fireCoord[fireX][fireY] = 1;
+
+                    //fireCoord[tempX+1][tempY] = 1;
+                    fireX = tempX + 1;
+                    fireY = tempY;
+                    hunting = 1;
+
+                }
+                else if( tempX - 1 >= 0 && fireCoord[tempX-1][tempY] == 0 )
+                {
+
+                    //fireCoord[tempX-1][tempY] = 1;
+                    fireX = tempX - 1;
+                    fireY = tempY;
+                    hunting = 2;
+
+                }
+                else if( tempY + 1 < 10 && fireCoord[tempX][tempY+1] == 0 )
+                {
+
+                    //fireCoord[tempX][tempY+1] = 1;
+                    fireX = tempX;
+                    fireY = tempY + 1;
+                    hunting = 3;
+
+                }
+                else if( tempY - 1 > 0 && fireCoord[tempX][tempY-1] == 0 )
+                {
+
+                    //fireCoord[tempX][tempY-1] = 1;
+                    fireX = tempX;
+                    fireY = tempY - 1; 
+                    hunting = 4;
+
+                }
+                else 
+                    huntMode = false;
+
+            }    
+
+            if( destroyMode )
+            {
+                System.out.println("Destroy");
+                System.out.println(enemyOnX);
+                System.out.println(enemyOnY);
+                System.out.println("path: " + path);
+
+               if( enemyOnX && fireCoord[fireX + path][fireY] != 1 && fireX + path < 10 && fireX + path >= 0 )
+               {
+                  System.out.println("Destroy x : " + path );
+                  fireX += path; 
+                  //fireCoord[fireX][fireY] = 1;
+               }
+               else if( enemyOnX && fireCoord[fireX + path][fireY] == 1 )
+               {
+                    fireX = tempX;
+                    if ( fireCoord[fireX - path][fireY] != 1 )
+                    {
+                      fireX -= path;
+                      System.out.println("Destroy x2 : " + path );
+                      //fireCoord[fireX][fireY] = 1;
+                    }
+                    else
+                    {
+                        continueKillPath = false;
+                        destroyMode = false;
+                        enemyOnY = false;
+                        enemyOnX = false;
+                    }
+               }
+
+               else if( enemyOnY && fireCoord[fireX][fireY + path] != 1 && fireY + path < 10 && fireY + path >= 0 )
+               {
+                   System.out.println("Destroy y : " + path );
+                  fireY += path;
+                  //fireCoord[fireX][fireY] = 1;
+               }
+               else if( enemyOnY && fireCoord[fireX][fireY + path] == 1 )
+               {
+                    fireY = tempY;
+                    if ( fireCoord[fireX][fireY - path] != 1 )
+                    {  
+                       fireY -= path;
+                       System.out.println("Destroy y2: " + path );
+                       //fireCoord[fireX][fireY] = 1;
+                    }
+                    else
+                    {
+                        continueKillPath = false;
+                        destroyMode = false;
+                        enemyOnY = false;
+                        enemyOnX = false;
+                    }
+               }
+
+
+
+            }
+
+            if( !huntMode && !destroyMode )
+            { 
+               System.out.println("Search");
+
+                     showPriorityBoard();
+
+                        setFireCoordinates();
+                        //fireCoord[fireX][fireY] = 1;    
+
+            }
+            if(fireCoord[fireX][fireY]==1)
+            {
+                if(tries)
+                {
+                    huntMode=false;
+                    destroyMode=false;
                 }
                 else
                 {
-                    continueKillPath = false;
-                    destroyMode = false;
-                    enemyOnY = false;
-                    enemyOnX = false;
+                    huntMode=true;
+                    destroyMode=false;
+                    tries=true;
                 }
-           }
- 
-           else if( enemyOnY && fireCoord[fireX][fireY + path] != 1 && fireY + path < 10 && fireY + path >= 0 )
-           {
-               System.out.println("Destroy y : " + path );
-              fireY += path;
-              fireCoord[fireX][fireY] = 1;
-           }
-           else if( enemyOnY && fireCoord[fireX][fireY + path] == 1 )
-           {
-                fireY = tempY;
-                if ( fireCoord[fireX][fireY - path] != 1 )
-                {  
-                   fireY -= path;
-                   System.out.println("Destroy y2: " + path );
-                   fireCoord[fireX][fireY] = 1;
-                }
-                else
-                {
-                    continueKillPath = false;
-                    destroyMode = false;
-                    enemyOnY = false;
-                    enemyOnX = false;
-                }
-           }
-  
-           
-           
+            }
+            else
+            {
+                shoot=false;
+            }
+            clearPriority();
         }
-        
-        if( !huntMode && !destroyMode )
-        { 
-           System.out.println("Search");
-            
-                 showPriorityBoard();
-
-                    setFireCoordinates();
-                    fireCoord[fireX][fireY] = 1;    
-
-        }
-            
-         
-          clearPriority();
-        
+          
+        fireCoord[fireX][fireY] = 1;  
          System.out.println( "Shooting at coords:" + " x " + fireX  +  " y " + fireY );
         return new Position(fireX,fireY);
     
