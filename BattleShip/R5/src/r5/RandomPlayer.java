@@ -194,8 +194,7 @@ public class RandomPlayer implements BattleshipsPlayer
          System.out.println("fleet size" + fleet.getShip(i).size() );
          
             if( fleet.getShip(i).size() > maxEnemyShipSize )
-            {
-                
+            {   
                 maxEnemyShipSize = fleet.getShip(i).size();
             }
             System.out.println("maxshipssizevar" + maxEnemyShipSize );
@@ -426,7 +425,7 @@ public class RandomPlayer implements BattleshipsPlayer
     
     int v = 0;
     int s = 0;
-    System.out.println("eSize" + maxEnemyShipSize );
+
         for( int i = 9; i >= 0 ; i--) // y
         {
 
@@ -533,11 +532,12 @@ public class RandomPlayer implements BattleshipsPlayer
             if( destroyMode )
             {  
                 destroyMode = false;
+                path = 0;
+                
             }
-            if( huntMode )
-                huntMode = false;
-      
+
             hitcount = 0;
+            
             this.enemyShips=enemyShips.getNumberOfShips();
            
             maxEnemyShipSize(enemyShips);
@@ -555,7 +555,7 @@ public class RandomPlayer implements BattleshipsPlayer
             System.out.println("Ship hit: " + hit );
             System.out.println("Enemy ships: " + enemyShips.getNumberOfShips() );    
         }
-        else if( hit && huntMode && !destroyMode)
+        else if( hit && huntMode )
         {
             
             if( hunting == 1 )
@@ -603,13 +603,10 @@ public class RandomPlayer implements BattleshipsPlayer
         {
             continueKillPath = false;
             path *= -1;
+            
+            // Here we reset our fire coordinates, so we don't go back and hit the same spot twice.
             fireX = tempX;
             fireY = tempY;
-        }
-        else if( !hit && destroyMode && continueKillPath )
-        {
-            destroyMode = false;
-            path = 0;
         }
         else 
         {
